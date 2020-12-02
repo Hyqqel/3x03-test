@@ -6,6 +6,12 @@ pipeline {
 				git branch:'main', url:'https://github.com/Hyqqel/3x03-test.git'
 			}
 		}
+		
+		stage('OWASP DependencyCheck') {
+			steps {
+				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+			}
+		}
 
 		stage('Code Quality Check via SonarQube') {
 			steps {
