@@ -3,7 +3,7 @@ pipeline {
 	stages {
 		stage('Checkout SCM') {
 			steps {
-				git '/home/JenkinsDependencyCheckTest'
+				git branch:'main', url:'https://github.com/Hyqqel/3x03-test.git'
 			}
 		}
 
