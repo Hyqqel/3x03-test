@@ -3,20 +3,28 @@ pipeline {
 	stages {
 		stage('Checkout SCM') {
 			steps {
-				git '/.git/Haikal/'
+				git '/home/JenkinsDependencyCheckTest'
 			}
 		}
 
-		stage('OWASP DependencyCheck') {
+		stage('Code Quality Check via SonarQube') {
 			steps {
-				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+				script {
+				def scannerHome = tool 'SonarQube';
+					with SonarQubeEnv() {
+					sh "$(tool("SonarQube")}/bin/sonar-scanner \
+					-Dsonar.projectKey=OWASP \
+					-Dsonar.sources=. \
+					-Dsonar.host.url=http://47.254.245.72:9000 \
+					-Dsonar.login=de72159ec017dddb50f7f414b37477bcb8b3e885"
+					}
+				}
 			}
 		}
 	}	
 	post {
-		success {
-			dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-			sh "sudo rm -R /var/47.254.245.72:8080/* /var/47.254.245.72:8080/.* || true"
+		always {
+			recordIssues enabledForFailure: true, tool: sonarQube()
 		}
 	}
 }
